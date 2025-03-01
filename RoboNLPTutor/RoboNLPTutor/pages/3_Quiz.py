@@ -2,12 +2,16 @@ import streamlit as st
 import random
 from utils.quiz import get_quiz, evaluate_quiz
 from datetime import datetime
-import openai
+from dotenv import load_dotenv
+import os
 
-st.set_page_config(page_title="Quizzes", page_icon="📝")
+# Load environment variables from .env file
+load_dotenv()
 
 # Initialize OpenAI API
-openai.api_key = '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'
+openai.api_key = os.getenv('OPENAI_API_KEY')
+
+st.set_page_config(page_title="Quizzes", page_icon="📝")
 
 # Initialize session state if needed
 if 'user_progress' not in st.session_state:

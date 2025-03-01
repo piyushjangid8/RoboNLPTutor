@@ -1,7 +1,12 @@
 import openai
 import random
+from dotenv import load_dotenv
+import os
 
-openai.api_key = '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'
+# Load environment variables from .env file
+load_dotenv()
+
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 def get_quiz(topic):
     """Generate a quiz based on the topic using OpenAI API."""
