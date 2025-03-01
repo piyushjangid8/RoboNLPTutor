@@ -22,6 +22,9 @@ if not DATABASE_URL:
 
 logger.info(f"Connecting to database: {DATABASE_URL}")
 
+# Create declarative base
+Base = declarative_base()
+
 # Create database engine
 engine = create_engine(DATABASE_URL)
 
@@ -36,9 +39,6 @@ try:
         logger.info("Database tables created successfully")
 except Exception as e:
     logger.error(f"Error checking/creating database tables: {str(e)}")
-
-# Create declarative base
-Base = declarative_base()
 
 def init_db():
     """Initialize the database by creating all tables"""
