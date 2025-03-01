@@ -62,7 +62,7 @@ if not st.session_state.quiz_submitted:
 else:
     # Display results
     st.header("Quiz Results")
-    score = st.session_state.user_progress['quiz_scores'][-1]['score']
+    score = float(st.session_state.user_progress['quiz_scores'][-1]['score'])
     st.write(f"Your score: {score:.1f}%")
 
     if score >= 80:
