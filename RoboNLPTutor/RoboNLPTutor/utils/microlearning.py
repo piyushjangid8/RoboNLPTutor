@@ -1,4 +1,5 @@
 import random
+import streamlit as st
 from data.microlearning_tips import MICROLEARNING_TIPS
 
 def get_random_tip(category=None):
@@ -10,6 +11,18 @@ def get_random_tip(category=None):
         tips = [tip for category in MICROLEARNING_TIPS.values() for tip in category]
     
     return random.choice(tips) if tips else None
+    
+def show_daily_tip(sidebar=True):
+    """Display a random daily tip in the Streamlit interface
+    
+    Args:
+        sidebar (bool): Whether to show the tip in the sidebar (True) or main area (False)
+    """
+    container = st.sidebar if sidebar else st
+    container.markdown("### 💡 Tip of the Day")
+    daily_tip = get_random_tip()
+    if daily_tip:
+        container.markdown(format_tip_markdown(daily_tip), unsafe_allow_html=True)
 
 def get_tips_for_category(category):
     """Get all tips for a specific category"""
