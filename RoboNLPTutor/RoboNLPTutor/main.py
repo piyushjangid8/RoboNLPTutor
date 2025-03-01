@@ -259,13 +259,7 @@ with col3:
         st.switch_page("pages/1_Roadmap.py")
 
 # Quiz handling
-from utils.quiz import generate_quiz, evaluate_quiz
-
-def get_quiz(topic):
-    try:
-        return generate_quiz(topic)
-    except Exception as e:
-        return f"Error generating quiz: {str(e)}"
+from utils.quiz import get_quiz, evaluate_quiz
 
 def main():
     print("Welcome to the Quiz Game!")
@@ -291,8 +285,8 @@ def main():
         return
     
     quiz = get_quiz(topic)
-    if isinstance(quiz, str):
-        print(quiz)
+    if not quiz:
+        print("No questions available for this topic.")
         return
     
     user_answers = []
@@ -306,22 +300,21 @@ def main():
         while True:
             try:
                 answer = int(input("Your answer (1-4): ")) - 1
-                if 0 <= answer < 4:
+                if 0 <= answer < len(question['options']):
                     user_answers.append(answer)
                     correct_answers.append(question['correct'])
                     break
                 else:
-                    print("Invalid choice. Enter a number between 1 and 4.")
+                    print("Invalid choice. Enter a valid option.")
             except ValueError:
                 print("Invalid input. Enter a number.")
     
-    result = evaluate_quiz(user_answers, correct_answers)
-    print(f"\nYour Score: {result['score']} out of {len(correct_answers)}")
-    print(f"Percentage: {result['percentage']}%")
+    score = evaluate_quiz(user_answers, correct_answers)
+    print(f"\nYour Score: {score:.1f}%")
     
-    if result['percentage'] >= 80:
+    if score >= 80:
         print("Excellent job!")
-    elif result['percentage'] >= 50:
+    elif score >= 50:
         print("Good effort! Keep practicing.")
     else:
         print("Better luck next time! Study more and try again.")
