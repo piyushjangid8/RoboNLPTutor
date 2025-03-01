@@ -1,28 +1,13 @@
 import streamlit as st
-import nltk
-from utils.chatbot import process_user_input, initialize_chatbot
-from utils.progress import load_user_progress
-import plotly.express as px
-from utils.achievements import check_achievements, get_achievement_stats
-from utils.microlearning import get_random_tip, format_tip_markdown
+from utils.microlearning import show_daily_tip
+from models.database import init_db, get_session
 
-# Download required NLTK data if not already downloaded
-import concurrent.futures
+# Initialize database
+try:
+    init_db()
+except Exception as e:
+    st.error(f"Error initializing database: {str(e)}")
 
-nltk_data = ['punkt', 'averaged_perceptron_tagger', 'wordnet']
-def download_nltk_data(data):
-    try:
-        nltk.data.find(f'tokenizers/{data}')
-    except LookupError:
-        try:
-            nltk.download(data)
-        except Exception as e:
-            print(f"Error downloading {data}: {e}")
-
-with concurrent.futures.ThreadPoolExecutor() as executor:
-    executor.map(download_nltk_data, nltk_data)
-
-# Page configuration
 st.set_page_config(
     page_title="AI Learning Assistant",
     page_icon="🤖",
@@ -88,6 +73,10 @@ if 'user_progress' not in st.session_state:
     }
 if 'achievements' not in st.session_state.user_progress:
     st.session_state.user_progress['achievements'] = []
+
+# Store database session in session_state
+if 'db_session' not in st.session_state:
+    st.session_state.db_session = get_session()
 
 # Main title with custom styling
 st.markdown('<div class="main-header">🤖 AI Learning Assistant for Data Science & Robotics</div>', unsafe_allow_html=True)
@@ -162,6 +151,8 @@ st.sidebar.markdown("### 🏆 Achievements")
 st.sidebar.progress(achievement_stats['percent_complete'] / 100)
 st.sidebar.markdown(f"{achievement_stats['total_earned']}/{achievement_stats['total_available']} Unlocked")
 
+
+
 # Main chat interface
 st.markdown('<div class="sub-header">Chat with AI Assistant</div>', unsafe_allow_html=True)
 
@@ -232,6 +223,18 @@ with col3:
     )
     if st.button("View Roadmap", key="roadmap_btn"):
         st.switch_page("pages/1_Roadmap.py")
+
+import nltk
+from utils.chatbot import process_user_input, initialize_chatbot
+from utils.progress import load_user_progress
+import plotly.express as px
+from utils.achievements import check_achievements, get_achievement_stats
+from utils.microlearning import get_random_tip, format_tip_markdown
+
+# Download required NLTK data
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('wordnet')
 
 # GitHub authentication setting
 st.session_state.github = {

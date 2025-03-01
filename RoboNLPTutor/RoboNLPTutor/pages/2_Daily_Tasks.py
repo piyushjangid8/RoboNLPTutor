@@ -40,7 +40,14 @@ for task in daily_tasks:
                 if st.button("Complete", key=f"complete_task_{task['id']}"):
                     completed_tasks = mark_task_complete(task['id'], completed_tasks)
                     # Update database
-                    add_completed_task(st.session_state.db_session, 1, task['id'])  # Default user ID 1
+                    try:
+                        if 'db_session' in st.session_state:
+                            add_completed_task(st.session_state.db_session, 1, task['id'])  # Default user ID 1
+                        else:
+                            st.warning("Database session not initialized")
+                    except Exception as e:
+                        st.error(f"Error saving to database: {str(e)}")
+                        
                     st.session_state.user_progress['completed_tasks'] = completed_tasks
                     st.rerun()
             else:

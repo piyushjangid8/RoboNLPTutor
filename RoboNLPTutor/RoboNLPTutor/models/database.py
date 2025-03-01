@@ -5,6 +5,7 @@ import os
 from datetime import datetime
 from dotenv import load_dotenv
 import logging
+import subprocess
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -16,16 +17,40 @@ load_dotenv()
 # Get database URL
 DATABASE_URL = os.getenv('DATABASE_URL')
 if not DATABASE_URL:
-    logger.warning("DATABASE_URL environment variable is not set. Using local SQLite database.")
-    DATABASE_URL = 'sqlite:///local_database.db'
+    # Fallback for development - SQLite
+    logger.warning("DATABASE_URL not found, using SQLite database")
+    DATABASE_URL = 'sqlite:///app.db'
 
-logger.info(f"Connecting to database...")
+logger.info(f"Connecting to database: {DATABASE_URL}")
+
+# Create PostgreSQL database if it doesn't exist
+if 'postgresql' in DATABASE_URL:
+    try:
+        subprocess.run(
+            ['psql', '-c', 'CREATE DATABASE learning_assistant;', '||', 'echo', '"Database may already exist"'],
+            check=True
+        )
+        logger.info("Database 'learning_assistant' created or already exists.")
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Error creating PostgreSQL database: {str(e)}")
+
+# Create declarative base
+Base = declarative_base()
 
 # Create database engine
 engine = create_engine(DATABASE_URL)
 
-# Create declarative base
-Base = declarative_base()
+# Create all tables if they don't exist
+try:
+    logger.info("Checking if database tables exist...")
+    from sqlalchemy import inspect
+    inspector = inspect(engine)
+    if not inspector.has_table('users'):
+        logger.info("Tables don't exist. Creating database tables...")
+        Base.metadata.create_all(engine)
+        logger.info("Database tables created successfully")
+except Exception as e:
+    logger.error(f"Error checking/creating database tables: {str(e)}")
 
 # Create session
 Session = sessionmaker(bind=engine)
