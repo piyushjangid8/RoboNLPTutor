@@ -16,7 +16,8 @@ load_dotenv()
 # Get database URL
 DATABASE_URL = os.getenv('DATABASE_URL')
 if not DATABASE_URL:
-    raise ValueError("DATABASE_URL environment variable is not set")
+    logger.warning("DATABASE_URL environment variable is not set. Using local SQLite database.")
+    DATABASE_URL = 'sqlite:///local_database.db'
 
 logger.info(f"Connecting to database...")
 
