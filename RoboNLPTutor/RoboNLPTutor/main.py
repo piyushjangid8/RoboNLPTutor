@@ -258,6 +258,71 @@ with col3:
     if st.button("View Roadmap", key="roadmap_btn"):
         st.switch_page("pages/1_Roadmap.py")
 
+# Quiz handling
+from quiz_generator import get_quiz, evaluate_quiz
+
+def main():
+    print("Welcome to the Quiz Game!")
+    topics = ["python", "data_science", "robotics"]
+    
+    print("Available topics:")
+    for i, topic in enumerate(topics, start=1):
+        print(f"{i}. {topic.capitalize()}")
+    
+    choice = input("Select a topic (enter number or name): ").strip().lower()
+    
+    if choice.isdigit():
+        choice = int(choice) - 1
+        if 0 <= choice < len(topics):
+            topic = topics[choice]
+        else:
+            print("Invalid choice!")
+            return
+    elif choice in topics:
+        topic = choice
+    else:
+        print("Invalid choice!")
+        return
+    
+    quiz = get_quiz(topic)
+    if isinstance(quiz, str):
+        print(quiz)
+        return
+    
+    user_answers = []
+    correct_answers = []
+    
+    for i, question in enumerate(quiz, start=1):
+        print(f"\nQuestion {i}: {question['question']}")
+        for j, option in enumerate(question['options']):
+            print(f"{j + 1}. {option}")
+        
+        while True:
+            try:
+                answer = int(input("Your answer (1-4): ")) - 1
+                if 0 <= answer < 4:
+                    user_answers.append(answer)
+                    correct_answers.append(question['correct'])
+                    break
+                else:
+                    print("Invalid choice. Enter a number between 1 and 4.")
+            except ValueError:
+                print("Invalid input. Enter a number.")
+    
+    result = evaluate_quiz(user_answers, correct_answers)
+    print(f"\nYour Score: {result['score']} out of {len(correct_answers)}")
+    print(f"Percentage: {result['percentage']}%")
+    
+    if result['percentage'] >= 80:
+        print("Excellent job!")
+    elif result['percentage'] >= 50:
+        print("Good effort! Keep practicing.")
+    else:
+        print("Better luck next time! Study more and try again.")
+
+if __name__ == "__main__":
+    main()
+    
 # GitHub authentication setting
 st.session_state.github = {
     "gitAuthentication": True
