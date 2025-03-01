@@ -52,7 +52,7 @@ if not st.session_state.quiz_submitted:
             st.session_state.user_progress['quiz_scores'] = []
         st.session_state.user_progress['quiz_scores'].append({
             'topic': topic,
-            'score': score,
+            'score': score['percentage'],  # Store only percentage
             'date': datetime.now().strftime("%Y-%m-%d")
         })
 
@@ -62,7 +62,7 @@ if not st.session_state.quiz_submitted:
 else:
     # Display results
     st.header("Quiz Results")
-    score = float(st.session_state.user_progress['quiz_scores'][-1]['score'])
+    score = st.session_state.user_progress['quiz_scores'][-1]['score']  # Extract stored percentage
     st.write(f"Your score: {score:.1f}%")
 
     if score >= 80:
