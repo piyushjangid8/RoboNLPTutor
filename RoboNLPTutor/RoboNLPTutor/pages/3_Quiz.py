@@ -1,8 +1,13 @@
 import streamlit as st
+import random
 from utils.quiz import get_quiz, evaluate_quiz
 from datetime import datetime
+import openai
 
 st.set_page_config(page_title="Quizzes", page_icon="📝")
+
+# Initialize OpenAI API
+openai.api_key = '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'
 
 # Initialize session state if needed
 if 'user_progress' not in st.session_state:
@@ -14,61 +19,82 @@ if 'user_progress' not in st.session_state:
         "notes": []
     }
 
-st.title("📝 Knowledge Check")
+# Initialize session state for quiz
+if 'quiz' not in st.session_state:
+    st.session_state.quiz = None
+if 'current_question' not in st.session_state:
+    st.session_state.current_question = 0
+if 'user_answers' not in st.session_state:
+    st.session_state.user_answers = []
+if 'show_explanation' not in st.session_state:
+    st.session_state.show_explanation = False
 
-# Quiz topic selection
-topic = st.selectbox(
-    "Select a topic for your quiz:",
-    ["python", "data_science", "robotics"]
-)
+def load_quiz(topic):
+    quiz = get_quiz(topic)
+    if quiz:
+        random.shuffle(quiz)
+        for question in quiz:
+            random.shuffle(question['options'])
+    return quiz
 
-if 'current_quiz' not in st.session_state or st.session_state.quiz_submitted:
-    st.session_state.current_quiz = get_quiz(topic)
-    st.session_state.user_answers = [None] * len(st.session_state.current_quiz)
-    st.session_state.quiz_submitted = False
+def display_question(question):
+    st.markdown(f"### {question['question']}")
+    for i, option in enumerate(question['options']):
+        if st.button(option, key=f"option_{i}"):
+            st.session_state.user_answers.append({
+                'question': question['question'],
+                'selected': option,
+                'correct': question['correct'],
+                'explanation': question['explanation'],
+                'options': question['options']
+            })
+            st.session_state.show_explanation = True
 
-# Display questions
-for i, question in enumerate(st.session_state.current_quiz):
-    st.write(f"**Question {i+1}:** {question['question']}")
+def display_explanation(answer):
+    st.markdown(f"**Your Answer:** {answer['selected']}")
+    if answer['selected'] == answer['correct']:
+        st.markdown("**Correct!**")
+    else:
+        st.markdown(f"**Incorrect!** The correct answer is: {answer['correct']}")
+    st.markdown(f"**Explanation:** {answer['explanation']}")
+    st.markdown("**Other Options:**")
+    for option in answer['options']:
+        if option != answer['correct']:
+            st.markdown(f"- {option}")
+
+def display_final_result():
+    score = evaluate_quiz([ans['selected'] for ans in st.session_state.user_answers],
+                          [ans['correct'] for ans in st.session_state.user_answers])
+    st.markdown(f"## Your Final Score: {score:.1f}%")
+    for answer in st.session_state.user_answers:
+        st.markdown(f"### {answer['question']}")
+        display_explanation(answer)
+
+# Main quiz logic
+def main():
+    st.title("Quiz Game")
+    topics = ["python", "data_science", "robotics"]
     
-    answer = st.radio(
-        f"Select your answer for question {i+1}:",
-        question['options'],
-        index=None,
-        key=f"q_{i}"
-    )
+    if st.session_state.quiz is None:
+        topic = st.selectbox("Select a topic", topics)
+        if st.button("Start Quiz"):
+            st.session_state.quiz = load_quiz(topic)
+            st.session_state.current_question = 0
+            st.session_state.user_answers = []
+            st.session_state.show_explanation = False
+    
+    if st.session_state.quiz:
+        if st.session_state.current_question < len(st.session_state.quiz):
+            question = st.session_state.quiz[st.session_state.current_question]
+            if not st.session_state.show_explanation:
+                display_question(question)
+            else:
+                display_explanation(st.session_state.user_answers[-1])
+                if st.button("Next Question"):
+                    st.session_state.current_question += 1
+                    st.session_state.show_explanation = False
+        else:
+            display_final_result()
 
-    if answer is not None:
-        st.session_state.user_answers[i] = question['options'].index(answer)
-
-if st.button("Submit Quiz"):
-    if None in st.session_state.user_answers:
-        st.warning("Please answer all questions before submitting.")
-    else:
-        correct_answers = [q['correct'] for q in st.session_state.current_quiz]
-        score = evaluate_quiz(st.session_state.user_answers, correct_answers)
-
-        st.session_state.user_progress['quiz_scores'].append({
-            'topic': topic,
-            'score': score,
-            'date': datetime.now().strftime("%Y-%m-%d")
-        })
-
-        st.session_state.quiz_submitted = True
-        st.rerun()
-
-if st.session_state.quiz_submitted:
-    st.header("Quiz Results")
-    last_score = st.session_state.user_progress['quiz_scores'][-1]['score']
-    st.write(f"Your score: {last_score:.1f}%")
-
-    if last_score >= 80:
-        st.success("Excellent work! 🎉")
-    elif last_score >= 60:
-        st.info("Good job! Keep practicing! 📚")
-    else:
-        st.warning("You might want to review this topic again. 📖")
-
-    if st.button("Take Another Quiz"):
-        st.session_state.quiz_submitted = False
-        st.rerun()
+if __name__ == "__main__":
+    main()
