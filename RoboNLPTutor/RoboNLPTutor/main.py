@@ -1,8 +1,35 @@
 import streamlit as st
 import plotly.express as px
 import pandas as pd
-from utils.microlearning import show_daily_tip
 from models.database import init_db, get_session
+import nltk
+from utils.chatbot import process_user_input, initialize_chatbot
+from utils.progress import load_user_progress
+from utils.achievements import check_achievements, get_achievement_stats
+from utils.microlearning import get_random_tip, format_tip_markdown
+
+# Download required NLTK data
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('wordnet')
+nltk.download('wordnet')
+
+# Initialize database
+try:
+    init_db()
+    # Create session and store in session state
+    if 'db_session' not in st.session_state:
+        st.session_state.db_session = get_session()
+except Exception as e:
+    st.error(f"Database error: {str(e)}")
+    st.warning("Running in local mode without database persistence.")
+
+# Initialize chatbot
+initialize_chatbot()
+
+# Load user progress
+if 'user_progress' not in st.session_state:
+    st.session_state.user_progress = load_user_progress()
 
 st.set_page_config(
     page_title="AI Learning Assistant",
@@ -230,28 +257,6 @@ with col3:
     )
     if st.button("View Roadmap", key="roadmap_btn"):
         st.switch_page("pages/1_Roadmap.py")
-
-import nltk
-from utils.chatbot import process_user_input, initialize_chatbot
-from utils.progress import load_user_progress
-from utils.achievements import check_achievements, get_achievement_stats
-from utils.microlearning import get_random_tip, format_tip_markdown
-
-# Download required NLTK data
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
-nltk.download('wordnet')
-nltk.download('wordnet')
-
-# Initialize database
-try:
-    init_db()
-    # Create session and store in session state
-    if 'db_session' not in st.session_state:
-        st.session_state.db_session = get_session()
-except Exception as e:
-    st.error(f"Database error: {str(e)}")
-    st.warning("Running in local mode without database persistence.")
 
 # GitHub authentication setting
 st.session_state.github = {
