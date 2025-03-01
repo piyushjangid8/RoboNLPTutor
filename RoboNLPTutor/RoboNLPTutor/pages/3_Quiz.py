@@ -48,7 +48,10 @@ if not st.session_state.quiz_submitted:
         score = evaluate_quiz(st.session_state.user_answers, correct_answers)
 
         # Ensure score is a float
-        score = float(score)
+        try:
+            score = float(score)
+        except (ValueError, TypeError):
+            score = 0.0
 
         # Store score in session state
         if 'quiz_scores' not in st.session_state.user_progress:
@@ -68,11 +71,14 @@ else:
     
     if st.session_state.user_progress['quiz_scores']:
         last_score = st.session_state.user_progress['quiz_scores'][-1].get('score', 0)
-        score = float(last_score)  # Ensure it's a float
+        try:
+            score = float(last_score)  # Ensure it's a float
+        except (ValueError, TypeError):
+            score = 0.0
         st.write(f"Your score: {score:.1f}%")
     else:
         st.warning("No quiz scores available yet.")
-        score = 0
+        score = 0.0
 
     if score >= 80:
         st.success("Excellent work! 🎉")
