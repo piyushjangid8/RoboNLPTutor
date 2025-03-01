@@ -65,8 +65,14 @@ if not st.session_state.quiz_submitted:
 else:
     # Display results
     st.header("Quiz Results")
-    score = float(st.session_state.user_progress['quiz_scores'][-1]['score'])  # Ensure float type
-    st.write(f"Your score: {score:.1f}%")
+    
+    if st.session_state.user_progress['quiz_scores']:
+        last_score = st.session_state.user_progress['quiz_scores'][-1].get('score', 0)
+        score = float(last_score)  # Ensure it's a float
+        st.write(f"Your score: {score:.1f}%")
+    else:
+        st.warning("No quiz scores available yet.")
+        score = 0
 
     if score >= 80:
         st.success("Excellent work! 🎉")
