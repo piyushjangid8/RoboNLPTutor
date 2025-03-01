@@ -1,4 +1,6 @@
 import streamlit as st
+import plotly.express as px
+import pandas as pd
 from utils.microlearning import show_daily_tip
 from models.database import init_db, get_session
 
@@ -80,10 +82,21 @@ with st.sidebar:
     st.markdown('<div class="sub-header">Learning Journey</div>', unsafe_allow_html=True)
     progress = st.session_state.user_progress
 
+    # Ensure progress['completed'] is an integer and within 0-100
+    completed = int(progress['completed'])
+    remaining = 100 - completed
+
+    # Create a DataFrame for the progress chart
+    df = pd.DataFrame({
+        'Status': ['Completed', 'Remaining'],
+        'Value': [completed, remaining]
+    })
+
     # Create progress chart with custom colors
     fig = px.pie(
-        values=[progress['completed'], 100-progress['completed']],
-        names=['Completed', 'Remaining'],
+        df,
+        values='Value',
+        names='Status',
         title='Overall Progress',
         color_discrete_sequence=['#1E88E5', '#E3F2FD']
     )
@@ -221,7 +234,6 @@ with col3:
 import nltk
 from utils.chatbot import process_user_input, initialize_chatbot
 from utils.progress import load_user_progress
-import plotly.express as px
 from utils.achievements import check_achievements, get_achievement_stats
 from utils.microlearning import get_random_tip, format_tip_markdown
 
