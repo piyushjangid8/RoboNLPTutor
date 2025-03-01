@@ -16,14 +16,26 @@ load_dotenv()
 # Get database URL
 DATABASE_URL = os.getenv('DATABASE_URL')
 if not DATABASE_URL:
-    logger.warning("DATABASE_URL not set. Using default PostgreSQL connection.")
-    # Default PostgreSQL connection string for Replit
-    DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/postgres'
+     # Fallback for development - SQLite
+    logger.warning("DATABASE_URL not found, using SQLite database")
+    DATABASE_URL = 'sqlite:///app.db'
 
-logger.info(f"Connecting to database...")
+logger.info(f"Connecting to database: {DATABASE_URL}")
 
 # Create database engine
 engine = create_engine(DATABASE_URL)
+
+# Create all tables if they don't exist
+try:
+    logger.info("Checking if database tables exist...")
+    from sqlalchemy import inspect
+    inspector = inspect(engine)
+    if not inspector.has_table('users'):
+        logger.info("Tables don't exist. Creating database tables...")
+        Base.metadata.create_all(engine)
+        logger.info("Database tables created successfully")
+except Exception as e:
+    logger.error(f"Error checking/creating database tables: {str(e)}")
 
 # Create declarative base
 Base = declarative_base()
