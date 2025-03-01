@@ -259,11 +259,11 @@ with col3:
         st.switch_page("pages/1_Roadmap.py")
 
 # Quiz handling
-from utils.quiz import generate_quizzes, evaluate_quiz
+from utils.quiz import generate_quiz, evaluate_quiz
 
 def get_quiz(topic):
     try:
-        return generate_quizzes(topic)
+        return generate_quiz(topic)
     except Exception as e:
         return f"Error generating quiz: {str(e)}"
 
