@@ -2,12 +2,6 @@ import streamlit as st
 from utils.microlearning import show_daily_tip
 from models.database import init_db, get_session
 
-# Initialize database
-try:
-    init_db()
-except Exception as e:
-    st.error(f"Error initializing database: {str(e)}")
-
 st.set_page_config(
     page_title="AI Learning Assistant",
     page_icon="🤖",
@@ -235,6 +229,17 @@ from utils.microlearning import get_random_tip, format_tip_markdown
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 nltk.download('wordnet')
+nltk.download('wordnet')
+
+# Initialize database
+try:
+    init_db()
+    # Create session and store in session state
+    if 'db_session' not in st.session_state:
+        st.session_state.db_session = get_session()
+except Exception as e:
+    st.error(f"Database error: {str(e)}")
+    st.warning("Running in local mode without database persistence.")
 
 # GitHub authentication setting
 st.session_state.github = {

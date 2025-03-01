@@ -16,7 +16,9 @@ load_dotenv()
 # Get database URL
 DATABASE_URL = os.getenv('DATABASE_URL')
 if not DATABASE_URL:
-    raise ValueError("DATABASE_URL environment variable is not set")
+    logger.warning("DATABASE_URL not set. Using default PostgreSQL connection.")
+    # Default PostgreSQL connection string for Replit
+    DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/postgres'
 
 logger.info(f"Connecting to database...")
 
