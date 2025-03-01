@@ -47,12 +47,15 @@ if not st.session_state.quiz_submitted:
         correct_answers = [q['correct'] for q in st.session_state.current_quiz]
         score = evaluate_quiz(st.session_state.user_answers, correct_answers)
 
+        # Ensure score is a float
+        score = float(score)
+
         # Store score in session state
         if 'quiz_scores' not in st.session_state.user_progress:
             st.session_state.user_progress['quiz_scores'] = []
         st.session_state.user_progress['quiz_scores'].append({
             'topic': topic,
-            'score': score['percentage'],  # Store only percentage
+            'score': score,  # Store as float directly
             'date': datetime.now().strftime("%Y-%m-%d")
         })
 
@@ -62,7 +65,7 @@ if not st.session_state.quiz_submitted:
 else:
     # Display results
     st.header("Quiz Results")
-    score = st.session_state.user_progress['quiz_scores'][-1]['score']  # Extract stored percentage
+    score = float(st.session_state.user_progress['quiz_scores'][-1]['score'])  # Ensure float type
     st.write(f"Your score: {score:.1f}%")
 
     if score >= 80:
