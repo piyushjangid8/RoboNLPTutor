@@ -259,7 +259,13 @@ with col3:
         st.switch_page("pages/1_Roadmap.py")
 
 # Quiz handling
-from quiz_generator import get_quiz, evaluate_quiz
+from utils.quiz import generate_quizzes, evaluate_quiz
+
+def get_quiz(topic):
+    try:
+        return generate_quizzes(topic)
+    except Exception as e:
+        return f"Error generating quiz: {str(e)}"
 
 def main():
     print("Welcome to the Quiz Game!")
@@ -322,7 +328,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
+
 # GitHub authentication setting
 st.session_state.github = {
     "gitAuthentication": True

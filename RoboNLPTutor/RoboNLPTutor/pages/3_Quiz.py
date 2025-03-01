@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.quiz import generate_quiz, evaluate_quiz
+from utils.quiz import get_quiz, evaluate_quiz
 from datetime import datetime
 
 st.set_page_config(page_title="Quizzes", page_icon="📝")
@@ -23,7 +23,7 @@ topic = st.selectbox(
 )
 
 if 'current_quiz' not in st.session_state:
-    st.session_state.current_quiz = generate_quiz(topic)
+    st.session_state.current_quiz = get_quiz(topic)
     st.session_state.user_answers = []
     st.session_state.quiz_submitted = False
 
@@ -73,7 +73,7 @@ else:
         st.warning("You might want to review this topic again. 📖")
 
     if st.button("Take Another Quiz"):
-        st.session_state.current_quiz = generate_quiz(topic)
+        st.session_state.current_quiz = get_quiz(topic)
         st.session_state.user_answers = []
         st.session_state.quiz_submitted = False
         st.rerun()
