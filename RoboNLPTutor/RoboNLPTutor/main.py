@@ -6,10 +6,21 @@ import plotly.express as px
 from utils.achievements import check_achievements, get_achievement_stats
 from utils.microlearning import get_random_tip, format_tip_markdown
 
-# Download required NLTK data
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
-nltk.download('wordnet')
+# Download required NLTK data if not already downloaded
+import concurrent.futures
+
+nltk_data = ['punkt', 'averaged_perceptron_tagger', 'wordnet']
+def download_nltk_data(data):
+    try:
+        nltk.data.find(f'tokenizers/{data}')
+    except LookupError:
+        try:
+            nltk.download(data)
+        except Exception as e:
+            print(f"Error downloading {data}: {e}")
+
+with concurrent.futures.ThreadPoolExecutor() as executor:
+    executor.map(download_nltk_data, nltk_data)
 
 # Page configuration
 st.set_page_config(
