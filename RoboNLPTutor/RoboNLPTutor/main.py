@@ -162,8 +162,6 @@ st.sidebar.markdown("### 🏆 Achievements")
 st.sidebar.progress(achievement_stats['percent_complete'] / 100)
 st.sidebar.markdown(f"{achievement_stats['total_earned']}/{achievement_stats['total_available']} Unlocked")
 
-
-
 # Main chat interface
 st.markdown('<div class="sub-header">Chat with AI Assistant</div>', unsafe_allow_html=True)
 
@@ -234,3 +232,8 @@ with col3:
     )
     if st.button("View Roadmap", key="roadmap_btn"):
         st.switch_page("pages/1_Roadmap.py")
+
+# GitHub authentication setting
+st.session_state.github = {
+    "gitAuthentication": True
+}
