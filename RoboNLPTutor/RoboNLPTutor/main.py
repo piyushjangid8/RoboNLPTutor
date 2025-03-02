@@ -9,6 +9,8 @@ from utils.achievements import check_achievements, get_achievement_stats
 from utils.microlearning import get_random_tip, format_tip_markdown
 import random
 from utils.quiz import get_quiz, evaluate_quiz
+import time
+import os
 # Download required NLTK data
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
@@ -330,11 +332,17 @@ def main():
                 if st.button("Next Question"):
                     st.session_state.current_question += 1
                     st.session_state.show_explanation = False
+                    time.sleep(1)  # Add delay to simulate increased response time
         else:
             display_final_result()
 
 if __name__ == "__main__":
     main()
+
+# Add React install option
+if st.button("Install React"):
+    os.system("npm install react react-dom")
+    st.success("React has been installed successfully!")
 
 # GitHub authentication setting
 st.session_state.github = {
