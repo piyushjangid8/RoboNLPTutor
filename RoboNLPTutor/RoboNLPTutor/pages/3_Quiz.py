@@ -4,10 +4,6 @@ from utils.quiz import get_quiz, evaluate_quiz
 from datetime import datetime
 from dotenv import load_dotenv
 import os
-
-# Load environment variables from .env file
-load_dotenv()
-
 st.set_page_config(page_title="Quizzes", page_icon="📝")
 
 # Initialize session state if needed

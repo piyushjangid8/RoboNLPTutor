@@ -9,7 +9,6 @@ from RoboNLPTutor.utils.achievements import check_achievements, get_achievement_
 from RoboNLPTutor.utils.microlearning import get_random_tip, format_tip_markdown
 import random
 from RoboNLPTutor.utils.quiz import get_quiz, evaluate_quiz
-
 # Download required NLTK data
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
