@@ -1,14 +1,14 @@
 import streamlit as st
 import plotly.express as px
 import pandas as pd
-from models.database import init_db, get_session
+from RoboNLPTutor.models.database import init_db, get_session
 import nltk
-from utils.chatbot import process_user_input, initialize_chatbot
-from utils.progress import load_user_progress
-from utils.achievements import check_achievements, get_achievement_stats
-from utils.microlearning import get_random_tip, format_tip_markdown
+from RoboNLPTutor.utils.chatbot import process_user_input, initialize_chatbot
+from RoboNLPTutor.utils.progress import load_user_progress
+from RoboNLPTutor.utils.achievements import check_achievements, get_achievement_stats
+from RoboNLPTutor.utils.microlearning import get_random_tip, format_tip_markdown
 import random
-from utils.quiz import get_quiz, evaluate_quiz
+from RoboNLPTutor.utils.quiz import get_quiz, evaluate_quiz
 
 # Download required NLTK data
 nltk.download('punkt')
