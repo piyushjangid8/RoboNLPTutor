@@ -14,7 +14,6 @@ from utils.quiz import get_quiz, evaluate_quiz
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 nltk.download('wordnet')
-nltk.download('wordnet')
 
 # Initialize database
 try:
@@ -186,8 +185,6 @@ achievement_stats = get_achievement_stats(st.session_state.user_progress)
 st.sidebar.markdown("### 🏆 Achievements")
 st.sidebar.progress(achievement_stats['percent_complete'] / 100)
 st.sidebar.markdown(f"{achievement_stats['total_earned']}/{achievement_stats['total_available']} Unlocked")
-
-
 
 # Main chat interface
 st.markdown('<div class="sub-header">Chat with AI Assistant</div>', unsafe_allow_html=True)
