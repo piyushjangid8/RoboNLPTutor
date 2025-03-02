@@ -9,21 +9,12 @@ from utils.achievements import check_achievements, get_achievement_stats
 from utils.microlearning import get_random_tip, format_tip_markdown
 import random
 from utils.quiz import get_quiz, evaluate_quiz
-import openai
-from dotenv import load_dotenv
-import os
 
 # Download required NLTK data
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 nltk.download('wordnet')
 nltk.download('wordnet')
-
-# Load environment variables from .env file
-load_dotenv()
-
-# Initialize OpenAI API
-openai.api_key = os.getenv('OPENAI_API_KEY')
 
 # Initialize database
 try:
